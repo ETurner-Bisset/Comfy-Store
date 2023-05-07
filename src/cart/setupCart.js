@@ -32,13 +32,12 @@ import {
       const items = [...cartItemsDOM.querySelectorAll('.cart-item-amount')];
       
       const newAmount = items.find((value) => value.dataset.id === id);
-      console.log(items);
-      console.log(newAmount);
+      
       newAmount.textContent = amount;
       
       
       
-    }
+    };
 
     // add one to the item count
     displayCartItemCount();
@@ -78,12 +77,26 @@ import {
       if (element.classList.contains('cart-item-remove-btn')){
         removeItem(id);
         parent.parentElement.remove();
-      }
+      };
       // increase
+      if (parent.classList.contains('cart-item-increase-btn')){
+        const newAmount = increaseAmount(parentId);
+        parent.nextElementSibling.textContent = newAmount;
+      };
       // decrease
+      if (parent.classList.contains('cart-item-decrease-btn')){
+        const newAmount = decreaseAmount(parentId);
+        if (newAmount === 0) {
+          removeItem(parentId);
+          parent.parentElement.parentElement.remove();
+        } else {
+          parent.previousElementSibling.textContent = newAmount;
+        }
+      };
       displayCartItemCount();
       displayCartTotal();
       setStorageItem('cart', cart);
+      
     });
     
   };
@@ -93,6 +106,19 @@ import {
     cart = cart.map((cartItem) => {
       if (cartItem.id === id) {
         newAmount = cartItem.amount + 1;
+        cartItem = {...cartItem, amount: newAmount};
+      }
+      return cartItem;
+    });
+    return newAmount;
+    
+  };
+
+  function decreaseAmount(id) {
+    let newAmount;
+    cart = cart.map((cartItem) => {
+      if (cartItem.id === id) {
+        newAmount = cartItem.amount - 1;
         cartItem = {...cartItem, amount: newAmount};
       }
       return cartItem;
